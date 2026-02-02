@@ -16,9 +16,7 @@ class UserController extends Controller
         return view('users.index', compact('users'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
+  
     public function create()
     {
         return view('users.create');
@@ -79,7 +77,7 @@ class UserController extends Controller
 
     public function destroy(User $user)
     {
-        // Prevent deleting yourself
+       
         if ($user->id === Auth::id()) {
             return redirect()->route('users.index')
                 ->with('error', 'You cannot delete your own account.');

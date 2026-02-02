@@ -7,20 +7,20 @@ use Illuminate\Http\Request;
 
 class ContactController extends Controller
 {
-   
+
     public function index()
     {
-        $contacts = Contact::whereNull('deleted_at')->orderBy('created_at', 'desc')->get();
+        $contacts = Contact::whereNull('deleted_at')->orderBy('created_at', 'desc')->paginate(10);
         return view('contacts.index', compact('contacts'));
     }
 
-   
+
     public function create()
     {
         return view('contacts.create');
     }
 
-   
+
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -124,7 +124,7 @@ class ContactController extends Controller
                 ->with('error', 'Unable to open the CSV file.');
         }
 
-      
+
         $header = fgetcsv($handle);
         if ($header === false) {
             fclose($handle);
@@ -135,32 +135,32 @@ class ContactController extends Controller
         $imported = 0;
         $skipped = 0;
         $errors = [];
-        $rowNumber = 1; 
+        $rowNumber = 1;
 
         while (($row = fgetcsv($handle)) !== false) {
             $rowNumber++;
 
-         
+
             if (empty(array_filter($row))) {
                 $skipped++;
                 continue;
             }
 
-        
+
             if (count($row) < 2) {
                 $errors[] = "Row {$rowNumber}: Insufficient columns. Required: first_name, last_name";
                 continue;
             }
 
             try {
-             
+
                 $first_name = trim($row[0] ?? '');
                 $last_name = trim($row[1] ?? '');
                 $phone = !empty($row[2]) ? trim($row[2]) : null;
                 $birthdate = !empty($row[3]) ? trim($row[3]) : null;
                 $city = !empty($row[4]) ? trim($row[4]) : null;
 
-             
+
                 if (empty($first_name)) {
                     $errors[] = "Row {$rowNumber}: First name is required";
                     continue;
@@ -186,19 +186,19 @@ class ContactController extends Controller
                     }
                 }
 
-           
+
                 if (!empty($phone) && strlen($phone) > 255) {
                     $errors[] = "Row {$rowNumber}: Phone number is too long (max 255 characters)";
                     continue;
                 }
 
-             
+
                 if (!empty($city) && strlen($city) > 255) {
                     $errors[] = "Row {$rowNumber}: City name is too long (max 255 characters)";
                     continue;
                 }
 
-              
+
                 $contact = new Contact();
                 $contact->first_name = $first_name;
                 $contact->last_name = $last_name;
@@ -217,7 +217,7 @@ class ContactController extends Controller
 
         fclose($handle);
 
-    
+
         $messages = [];
 
         if ($imported > 0) {
@@ -234,7 +234,7 @@ class ContactController extends Controller
 
         $message = !empty($messages) ? implode('. ', $messages) . '.' : 'No contacts were imported.';
 
-      
+
         $messageType = !empty($errors) ? 'warning' : ($imported > 0 ? 'success' : 'error');
 
         return redirect()->route('contacts.index')

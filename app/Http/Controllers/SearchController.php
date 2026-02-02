@@ -8,18 +8,12 @@ use Illuminate\Http\Request;
 
 class SearchController extends Controller
 {
-    /**
-     * Display the search page.
-     */
     public function index(Request $request)
     {
         $departments = Department::orderBy('name')->get();
         return view('search.index', compact('departments'));
     }
 
-    /**
-     * Handle AJAX search requests.
-     */
     public function search(Request $request)
     {
         $name = $request->get('name', '');
@@ -28,7 +22,7 @@ class SearchController extends Controller
 
         $query = Contact::with('departments');
 
-        // Search by name (partial match on first_name or last_name)
+    
         if (!empty($name)) {
             $query->where(function ($q) use ($name) {
                 $q->where('first_name', 'like', "%{$name}%")
@@ -36,12 +30,11 @@ class SearchController extends Controller
             });
         }
 
-        // Search by phone number
+    
         if (!empty($phone)) {
             $query->where('phone', 'like', "%{$phone}%");
         }
 
-        // Filter by department (single selection, but contacts can belong to multiple)
         if (!empty($departmentId)) {
             $query->whereHas('departments', function ($q) use ($departmentId) {
                 $q->where('departments.id', $departmentId);
@@ -52,7 +45,6 @@ class SearchController extends Controller
         $page = $request->get('page', 1);
         $contacts = $query->latest()->paginate($perPage, ['*'], 'page', $page);
 
-        // Return JSON response for AJAX
         if ($request->ajax()) {
             return response()->json([
                 'success' => true,
