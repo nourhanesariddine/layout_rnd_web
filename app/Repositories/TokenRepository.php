@@ -10,10 +10,7 @@ use Illuminate\Support\Str;
 class TokenRepository implements TokenRepositoryInterface
 {
 
-    public function createUserToken()
-    {
-        return md5(uniqid() . env('APP_KEY')) . md5(uniqid() . env('APP_KEY'));
-    }
+
 
     public function createAccessToken($id, $type , $duration_minutes = 525600)
     {
