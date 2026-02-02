@@ -12,7 +12,7 @@ Route::get('login', [LoginController::class, 'showLoginForm'])->name('login');
 Route::post('login', [LoginController::class, 'login']);
 Route::post('logout', [LoginController::class, 'logout'])->name('logout');
 
-// Protected routes (require authentication)
+
 Route::middleware([App\Http\Middleware\AuthMiddleware::class])->group(function () {
  
     Route::get('/', [SearchController::class, 'index'])->name('search.index');
