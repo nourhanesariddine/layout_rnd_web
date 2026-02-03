@@ -53,10 +53,6 @@
                 </tr>
             @endforeach
         </x-table>
-        
-        <div class="mt-3">
-            {{ $contacts->links() }}
-        </div>
     </x-card>
 @else
     <x-card>
@@ -76,7 +72,6 @@
     </x-card>
 @endif
 
-<!-- Import CSV Modal -->
 <x-modal 
     id="importModal"
     title='<i class="bi bi-upload me-2"></i>Import Contacts from CSV'
@@ -100,11 +95,10 @@
     </form>
 </x-modal>
 
-<!-- Delete Confirmation Modal -->
 <x-modal id="deleteModal" title='<i class="bi bi-exclamation-triangle text-danger me-2"></i>Confirm Delete'>
     <x-slot name="footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-        <form id="deleteContactForm" method="POST" class="d-inline">
+        <form id="deleteContactForm" method="POST" class="d-inline" data-base-action="{{ route('contacts.destroy', ':id') }}">
             @csrf
             @method('DELETE')
             <button type="submit" class="btn btn-danger">
@@ -122,46 +116,3 @@
 </x-modal>
 @endsection
 
-@push('scripts')
-<script>
-    // Auto-submit form when file is selected (optional enhancement)
-    document.getElementById('csv_file')?.addEventListener('change', function(e) {
-        if (this.files.length > 0) {
-            // File selected, ready to import
-        }
-    });
-    
-    // Initialize Bootstrap tooltips
-    document.addEventListener('DOMContentLoaded', function() {
-        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
-            return new bootstrap.Tooltip(tooltipTriggerEl);
-        });
-    });
-    
-    // Delete confirmation modal handler
-    const deleteModal = document.getElementById('deleteModal');
-    if (deleteModal) {
-        deleteModal.addEventListener('show.bs.modal', function (event) {
-            // Button that triggered the modal
-            const button = event.relatedTarget;
-            
-            // Extract info from data attributes
-            const contactId = button.getAttribute('data-contact-id');
-            const contactName = button.getAttribute('data-contact-name');
-            
-            // Update modal content
-            const contactNameSpan = deleteModal.querySelector('#contactNameToDelete');
-            if (contactNameSpan) {
-                contactNameSpan.textContent = contactName;
-            }
-            
-            // Update form action
-            const form = deleteModal.querySelector('#deleteContactForm');
-            if (form) {
-                form.action = '{{ route("contacts.destroy", ":id") }}'.replace(':id', contactId);
-            }
-        });
-    }
-</script>
-@endpush

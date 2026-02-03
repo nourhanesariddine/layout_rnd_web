@@ -13,11 +13,10 @@ if (!function_exists('form_field_config')) {
     {
         $classes = config('form-classes');
 
-        // Extract configuration
         $name = $config['name'] ?? '';
         $label = $config['label'] ?? ucfirst(str_replace('_', ' ', $name));
-        $fieldType = $config['type'] ?? 'textfield'; // textfield, datefield, filefield
-        $inputType = $config['input_type'] ?? 'text'; // text, tel, email, etc.
+        $fieldType = $config['type'] ?? 'textfield';
+        $inputType = $config['input_type'] ?? 'text';
         $value = $config['value'] ?? '';
         $required = $config['required'] ?? false;
         $placeholder = $config['placeholder'] ?? '';
@@ -28,7 +27,6 @@ if (!function_exists('form_field_config')) {
         $inputId = $name;
         $oldValue = old($name, $value ?? '');
 
-        // Check for errors - will be handled by @error directive in Blade
         $errorClass = '';
         if (session()->has('errors')) {
             $errors = session()->get('errors');
@@ -39,7 +37,6 @@ if (!function_exists('form_field_config')) {
 
         $colClass = $col ? $classes['column_prefix'] . $col : '';
 
-        // Handle date formatting for datefield
         if ($fieldType === 'datefield' && $oldValue) {
             if ($oldValue instanceof Carbon) {
                 $oldValue = $oldValue->format('Y-m-d');

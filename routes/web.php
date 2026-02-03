@@ -14,12 +14,12 @@ Route::post('logout', [LoginController::class, 'logout'])->name('logout');
 
 
 Route::middleware([App\Http\Middleware\AuthMiddleware::class])->group(function () {
- 
+
     Route::get('/', [SearchController::class, 'index'])->name('search.index');
     Route::get('search', [SearchController::class, 'index'])->name('search.index');
     Route::post('search', [SearchController::class, 'search'])->name('search.search');
 
-   
+
     Route::get('users', [UserController::class, 'index'])->name('users.index');
     Route::get('users/create', [UserController::class, 'create'])->name('users.create');
     Route::post('users', [UserController::class, 'store'])->name('users.store');
@@ -29,7 +29,7 @@ Route::middleware([App\Http\Middleware\AuthMiddleware::class])->group(function (
     Route::patch('users/{user}', [UserController::class, 'update'])->name('users.update');
     Route::delete('users/{user}', [UserController::class, 'destroy'])->name('users.destroy');
 
-  
+
     Route::get('contacts', [ContactController::class, 'index'])->name('contacts.index');
 
     Route::get('contacts/create', [ContactController::class, 'create'])->name('contacts.create');
@@ -42,6 +42,7 @@ Route::middleware([App\Http\Middleware\AuthMiddleware::class])->group(function (
     Route::patch('contacts/{contact}', [ContactController::class, 'update'])->name('contacts.update');
     Route::delete('contacts/{contact}', [ContactController::class, 'destroy'])->name('contacts.destroy');
     Route::post('contacts/import', [ContactController::class, 'import'])->name('contacts.import');
+    Route::put('contacts/{contact}/departments', [ContactController::class, 'updateDepartments'])->name('contacts.departments.update');
 
 
     Route::get('departments', [DepartmentController::class, 'index'])->name('departments.index');

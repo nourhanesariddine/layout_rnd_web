@@ -67,7 +67,6 @@
         </div>
     </nav>
 
-    <!-- Modern Toast Container -->
     <div class="toast-container position-fixed top-0 end-0 p-3" id="toastContainer" style="z-index: 9999">
         @php
             $successMessage = session()->pull('success');

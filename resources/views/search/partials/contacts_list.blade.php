@@ -1,3 +1,8 @@
+@php
+    $minResults = config('search.min_results_for_pagination', 5);
+    $showPagination = $contacts->total() > $minResults && $contacts->hasPages();
+@endphp
+
 @if($contacts->count() > 0)
     <div class="mb-3">
         <h5 class="mb-3">
@@ -64,8 +69,7 @@
         </table>
     </div>
 
-    <!-- Pagination -->
-    @if($contacts->hasPages())
+    @if($showPagination)
         <div class="mt-3">
             <nav aria-label="Search results pagination">
                 <ul class="pagination justify-content-center" id="paginationLinks">

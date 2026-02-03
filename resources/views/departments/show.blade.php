@@ -52,11 +52,10 @@
     </div>
 </div>
 
-<!-- Delete Confirmation Modal -->
 <x-modal id="deleteModal" title='<i class="bi bi-exclamation-triangle text-danger me-2"></i>Confirm Delete'>
     <x-slot name="footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-        <form id="deleteDepartmentForm" method="POST" class="d-inline">
+        <form id="deleteDepartmentForm" method="POST" class="d-inline" data-base-action="{{ route('departments.destroy', ':id') }}">
             @csrf
             @method('DELETE')
             <button type="submit" class="btn btn-danger">
@@ -74,31 +73,3 @@
 </x-modal>
 @endsection
 
-@push('scripts')
-<script>
-    // Delete confirmation modal handler
-    const deleteModal = document.getElementById('deleteModal');
-    if (deleteModal) {
-        deleteModal.addEventListener('show.bs.modal', function (event) {
-            // Button that triggered the modal
-            const button = event.relatedTarget;
-            
-            // Extract info from data attributes
-            const departmentId = button.getAttribute('data-department-id');
-            const departmentName = button.getAttribute('data-department-name');
-            
-            // Update modal content
-            const departmentNameSpan = deleteModal.querySelector('#departmentNameToDelete');
-            if (departmentNameSpan) {
-                departmentNameSpan.textContent = departmentName;
-            }
-            
-            // Update form action
-            const form = deleteModal.querySelector('#deleteDepartmentForm');
-            if (form) {
-                form.action = '{{ route("departments.destroy", ":id") }}'.replace(':id', departmentId);
-            }
-        });
-    }
-</script>
-@endpush

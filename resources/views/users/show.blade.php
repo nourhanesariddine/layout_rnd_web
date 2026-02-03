@@ -71,11 +71,10 @@
 </div>
 
 @if($user->id !== Auth::id())
-<!-- Delete Confirmation Modal -->
 <x-modal id="deleteModal" title='<i class="bi bi-exclamation-triangle text-danger me-2"></i>Confirm Delete'>
     <x-slot name="footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-        <form id="deleteUserForm" method="POST" class="d-inline">
+        <form id="deleteUserForm" method="POST" class="d-inline" data-base-action="{{ route('users.destroy', ':id') }}">
             @csrf
             @method('DELETE')
             <button type="submit" class="btn btn-danger">
@@ -93,29 +92,3 @@
 </x-modal>
 @endif
 @endsection
-
-@if($user->id !== Auth::id())
-@push('scripts')
-<script>
-    // Delete confirmation modal handler
-    const deleteModal = document.getElementById('deleteModal');
-    if (deleteModal) {
-        deleteModal.addEventListener('show.bs.modal', function (event) {
-            const button = event.relatedTarget;
-            const userId = button.getAttribute('data-user-id');
-            const userName = button.getAttribute('data-user-name');
-            
-            const userNameSpan = deleteModal.querySelector('#userNameToDelete');
-            if (userNameSpan) {
-                userNameSpan.textContent = userName;
-            }
-            
-            const form = deleteModal.querySelector('#deleteUserForm');
-            if (form) {
-                form.action = '{{ route("users.destroy", ":id") }}'.replace(':id', userId);
-            }
-        });
-    }
-</script>
-@endpush
-@endif

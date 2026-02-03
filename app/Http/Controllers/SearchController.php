@@ -11,7 +11,8 @@ class SearchController extends Controller
     public function index(Request $request)
     {
         $departments = Department::orderBy('name')->get();
-        return view('search.index', compact('departments'));
+        $perPage = config('search.per_page', 5);
+        return view('search.index', compact('departments', 'perPage'));
     }
 
     public function search(Request $request)
@@ -22,7 +23,6 @@ class SearchController extends Controller
 
         $query = Contact::with('departments');
 
-    
         if (!empty($name)) {
             $query->where(function ($q) use ($name) {
                 $q->where('first_name', 'like', "%{$name}%")
@@ -30,7 +30,6 @@ class SearchController extends Controller
             });
         }
 
-    
         if (!empty($phone)) {
             $query->where('phone', 'like', "%{$phone}%");
         }
@@ -41,11 +40,13 @@ class SearchController extends Controller
             });
         }
 
-        $perPage = $request->get('per_page', 10);
+        $perPage = $request->get('per_page', config('search.per_page', 5));
         $page = $request->get('page', 1);
         $contacts = $query->latest()->paginate($perPage, ['*'], 'page', $page);
 
         if ($request->ajax()) {
+            $contacts->load('departments');
+
             return response()->json([
                 'success' => true,
                 'contacts' => $contacts->items(),
@@ -54,6 +55,7 @@ class SearchController extends Controller
                     'last_page' => $contacts->lastPage(),
                     'per_page' => $contacts->perPage(),
                     'total' => $contacts->total(),
+                    'has_more' => $contacts->hasMorePages(),
                 ],
                 'html' => view('search.partials.contacts_list', compact('contacts'))->render()
             ]);

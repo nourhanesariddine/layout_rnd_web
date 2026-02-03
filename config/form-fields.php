@@ -21,7 +21,7 @@ return [
             'type' => 'textfield',
             'input_type' => 'tel',
             'name' => 'phone',
-            'required' => false,
+            'required' => true,
             'column' => 6
         ],
         'birthdate' => [

@@ -29,13 +29,6 @@ class LoginController extends Controller
         return view('auth.login');
     }
 
-    /**
-     * Handle a login request.
-     * 
-     * Two approaches:
-     * 1. Auth::login() - Manually log in after custom validation (current approach)
-     * 2. Auth::attempt() - Laravel's built-in method that validates AND logs in (recommended)
-     */
     public function login(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -47,8 +40,6 @@ class LoginController extends Controller
             return redirect()->back()->withErrors($validator)->withInput();
         }
 
-        // APPROACH 1: Manual validation + Auth::login() (Current - for custom password hashing like md5)
-        // This is used when you need custom password validation (e.g., md5, legacy systems)
         $user = $this->userRepository->getUserByEmail($request->email);
 
         if (!$user || md5($request->password) !== $user->password) {
@@ -57,35 +48,25 @@ class LoginController extends Controller
                 ->withInput();
         }
 
-        // Manually log the user in after custom validation
         Auth::login($user, $request->boolean('remember'));
 
-        // Regenerate session to prevent session fixation attacks
         $request->session()->regenerate();
 
-        // Create access token for API/stateless authentication (optional)
         $accessToken = $this->tokenRepository->createAccessToken(
             $user->id,
             'App\\Models\\User',
-            525600 // 1 year expiration (adjust as needed)
+            525600
         );
 
-        // Store access token in session for API access (optional)
         $request->session()->put('access_token', $accessToken->token);
 
         return redirect()->route('search.index')
             ->with('success', 'Login successful! Welcome back.')
-            ->with('access_token', $accessToken->token); // Optional: pass token to view
-
-
+            ->with('access_token', $accessToken->token);
     }
 
-    /**
-     * Log the user out.
-     */
     public function logout(Request $request)
     {
-        // Revoke access tokens for the current user (optional)
         if (Auth::check()) {
             \App\Models\AccessToken::where('tokenable_id', Auth::id())
                 ->where('tokenable_type', 'App\\Models\\User')
